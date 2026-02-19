@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -euo pipefail
 ############################################################################################
 #
 # Author : Mani Kumar
@@ -14,7 +14,6 @@
 
 SOURCE_DIR="/home/devops/projects/backup_TS"
 DESTINATION_DIR="/home/devops/backups"
-TODAY_DATE_TIME=$(date +"%F_%T %p")
 
 # Step-2: check the directories exist or not
 
@@ -26,21 +25,34 @@ fi
 if [ ! -d "$DESTINATION_DIR" ];then
 
 	echo "ERROR: The $DESTINATION_DIR does not exist!"
-	exit 1
+	mkdir -p "$DESTINATION_DIR"
 fi
 
 # Step-3 : Navigate to the backup folder and compress the  backup folder
 
 get_backup(){
 	
-	BACKUP_FILE="$DESTINATION_DIR/backup_TS_$(date +"%Y%m%d_%H%M").tar.gz"
-	tar -czvf "$BACKUP_FILE" -C "$(dirname "$SOURCE_DIR")" "$(basename "$SOURCE_DIR")"
-	ls -lhrt "$DESTINATION_DIR"
+	local BACKUP_FILE="$DESTINATION_DIR/backup_TS_$(date +"%Y%m%d_%H%M").tar.gz"
+
+	if tar -czf "$BACKUP_FILE" -C "$(dirname "$SOURCE_DIR")" "$(basename "$SOURCE_DIR")";then
+	
+		echo "$BACKUP_FILE"
+		return 0
+	else
+		return 1
+	fi
 }
 
-get_backup
+RESULT="$(get_backup)"
 
+# Check the backup zip directory is created or not in destination directory
 
+if [ ! -f "$RESULT" ];then
+	
+	echo "ERROR: The backup file $RESULT does not created"
+	exit 1
+else
+	echo "Backup created at $RESULT"
 
-
+fi
 
