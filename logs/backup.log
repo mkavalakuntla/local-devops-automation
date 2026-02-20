@@ -1,0 +1,5 @@
+2026-02-20 12:12:37 [ INFO ] Starting backup process...
+2026-02-20 12:12:37 [ INFO ] Source: /home/devops/local-devops-automation/projects/backup_TS/
+2026-02-20 12:12:37 [ INFO ] Destination: /home/devops/local-devops-automation/backups/
+2026-02-20 12:12:37 [ INFO ] /home/devops/local-devops-automation/backups//backup_TS_20260220_1212.tar.gz
+2026-02-20 12:12:37 [ ERROR ] Backup file was not created: 

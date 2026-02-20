@@ -19,30 +19,48 @@ set -euo pipefail
 # 4 -> Backup file not created
 #############################################
 
+DATE_FORMAT="+%F %T"
+
+# Creating a reusable log function
+
+log(){
+        LOG_LEVEL="$1"
+        LOG_MESSAGE="$2"
+        TIME_STAMP="$(date "$DATE_FORMAT")"
+
+        LOG_ENTRY="$TIME_STAMP [ $LOG_LEVEL ] $LOG_MESSAGE"
+	echo "$LOG_ENTRY" >> "$LOG_PATH/backup.log"
+
+}
+
 # Validate argument count
-if [ $# -ne 2 ]; then
-    echo "[ERROR] Invalid number of arguments."
-    echo "Usage: ./backup.sh <source_dir> <destination_dir>"
+if [ $# -ne 3 ]; then
+    echo "[ ERROR ] Invalid number of arguments."
+    echo "[ USAGE ] ./backup.sh <source_dir> <destination_dir> <log_dir>"
     exit 1
 fi
 
 # Assign arguments
 SOURCE_DIR="$1"
 DESTINATION_DIR="$2"
+LOG_PATH="$3"
 
-echo "[INFO] Starting backup process..."
-echo "[INFO] Source: $SOURCE_DIR"
-echo "[INFO] Destination: $DESTINATION_DIR"
+# Ensure log directory path exists
+mkdir -p "$LOG_PATH"
+
+log INFO "Starting backup process..."
+log INFO "Source: $SOURCE_DIR"
+log INFO "Destination: $DESTINATION_DIR"
 
 # Validate source directory
 if [ ! -d "$SOURCE_DIR" ]; then
-    echo "[ERROR] Source directory does not exist: $SOURCE_DIR"
+    log ERROR "Source directory does not exist: $SOURCE_DIR"
     exit 2
 fi
 
 # Validate / create destination directory
 if [ ! -d "$DESTINATION_DIR" ]; then
-    echo "[WARN] Destination directory not found. Creating..."
+    log WARN "Destination directory not found. Creating..."
     mkdir -p "$DESTINATION_DIR"
 fi
 
@@ -52,19 +70,26 @@ get_backup() {
 
     if tar -czf "$BACKUP_FILE" -C "$(dirname "$SOURCE_DIR")" "$(basename "$SOURCE_DIR")"; then
         echo "$BACKUP_FILE"
+
         return 0
     else
         return 3
     fi
 }
 
-RESULT="$(get_backup)" || exit 3
+# Execute backup
+
+BACKUP_RESULT="$(get_backup)" || {
+    log ERROR "Backup failed during tar execution"
+    exit 3
+}
 
 # Verify backup file creation
-if [ ! -f "$RESULT" ]; then
-    echo "[ERROR] Backup file was not created: $RESULT"
+if [ ! -f "$BACKUP_RESULT" ]; then
+    log ERROR "Backup file was not created: $BACKUP_RESULT"
     exit 4
 fi
 
-echo "[INFO] Backup created successfully at: $RESULT"
+log INFO "Backup created successfully at: $BACKUP_RESULT"
+
 exit 0
