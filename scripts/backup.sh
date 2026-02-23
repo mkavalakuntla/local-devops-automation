@@ -24,12 +24,12 @@ DATE_FORMAT="+%F %T"
 # Creating a reusable log function
 
 log(){
-        LOG_LEVEL="$1"
-        LOG_MESSAGE="$2"
-        TIME_STAMP="$(date "$DATE_FORMAT")"
-
-        LOG_ENTRY="$TIME_STAMP [ $LOG_LEVEL ] $LOG_MESSAGE"
-	echo "$LOG_ENTRY" >> "$LOG_PATH/backup.log"
+       local LOG_LEVEL="$1"
+       local LOG_MESSAGE="$2"
+       local TIME_STAMP="$(date "$DATE_FORMAT")"
+       local LOG_ENTRY="$TIME_STAMP [ $LOG_LEVEL ] $LOG_MESSAGE"
+       
+       echo "$LOG_ENTRY" >> "$LOG_PATH/backup.log"
 
 }
 
