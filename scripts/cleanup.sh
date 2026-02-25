@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -e
+set -u
+set -o pipefail
+
 ########################################################################################
 #
 # Author	: Mani Kumar
@@ -10,21 +14,33 @@
 #
 ########################################################################################
 
+# Create a reusable log function
+
+DATE_FORMAT="%F %T"
 
 log(){
 	local LOG_STATUS="$1"
 	local LOG_MESSAGE="$2"
-	local TIME_STAMP="$(date +%F %T)"
-	
+	local TIME_STAMP="$(date +"$DATE_FORMAT")"
+	local LOG_ENTRY="$TIME_STAMP [ $LOG_STATUS ] $LOG_MESSAGE"
 
+	echo "$LOG_ENTRY" >> "$LOG_PATH/backup_cleanup.log"
+}
 
+# Validate Arguments count 
+
+if [ $# -nq 1 ];then
+	echo "[ ERROR ] Invalid number of arguments."
+	echo "[ USAGE ] ./cleanup.sh <source_dir> <log_dir>"
+	exit 1
+fi
 
 # Initialize the variables
 
-BACKUP_DIR="/home/devops/local-devops-automation/backups"
-LOG_FILE="/home/devops/local-devops-automation/logs/cleanup.log"
-RETENTION_DAYS=7
+BACKUPS_PATH="/home/devops/local-devops-automation/backups"
+LOG_PATH="/home/devops/local-devops-automation/logs"
+RETUNTION_PERIOD=7
 
-# Check the backup directory exist or not
+# Write a backups cleanup function based on retention period
 
 
