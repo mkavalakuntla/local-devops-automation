@@ -1,8 +1,6 @@
 #!/bin/bash
 
-set -e
-set -u
-set -o pipefail
+set -euo pipefail
 
 ########################################################################################
 #
@@ -46,8 +44,7 @@ log(){
         local LOG_MESSAGE="$2"
         local TIME_STAMP="$(date +"$DATE_FORMAT")"
         local LOG_ENTRY="$TIME_STAMP [ $LOG_STATUS ] $LOG_MESSAGE"
-
-        echo "$LOG_ENTRY" >> "$LOG_PATH/backup_cleanup.log"
+	echo "$LOG_ENTRY" | tee -a "$LOG_PATH/backup_cleanup.log"
 }
 
 # Check the backup directory
@@ -60,30 +57,36 @@ if [ ! -d "$BACKUPS_PATH" ];then
 	exit 1
 fi
 
+# Checking the write permissions on backup directory
+if [ ! -w "$BACKUPS_PATH" ]; then
+    log ERROR "No write permission on $BACKUPS_PATH"
+    exit 1
+fi
+
 # Check the backups more than 7 days and clear them
 
 log INFO "Checking for backups older than $RETENTION_PERIOD days..."
 
-OLD_BACKUPS=$(find "$BACKUPS_PATH" -type f -name "*.tar.gz" -mtime +"$RETENTION_PERIOD")
+mapfile -t OLD_BACKUPS < <(find "$BACKUPS_PATH" -maxdepth 1 -type f -name "*.tar.gz" -mtime +"$RETENTION_PERIOD")
 
-if [ -z "$OLD_BACKUPS" ];then
+
+if [ ${#OLD_BACKUPS[@]} -eq 0 ]; then
 
 	log INFO "No old backup files are found."
 	exit 0
+
 else
 	log INFO "Old backup files found:"
- 	echo "$OLD_BACKUPS" >> "$LOG_PATH/backup_cleanup.log"
+	printf "%s\n" "${OLD_BACKUPS[@]}" >> "$LOG_PATH/backup_cleanup.log"
 
 	log INFO "Deleting old backups files.."
 
-	find "$BACKUPS_PATH" -type f -name "*.tar.gz" -mtime +"$RETENTION_PERIOD" -delete
+	for file in "${OLD_BACKUPS[@]}"; do
+	    log INFO "Deleting $file"
+	    rm -f "$file"
+	done
 
 	log INFO "Old backups are deleted successfully.."
 fi
 
 exit 0
-
-
-
-
-

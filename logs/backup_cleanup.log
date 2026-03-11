@@ -1,0 +1,13 @@
+2026-03-11 10:19:39 [ INFO ] Checking the backups path is exist or not
+2026-03-11 10:19:39 [ INFO ] Checking for backups older than 7 days...
+2026-03-11 10:19:39 [ INFO ] Old backup files found:
+/home/devops/local-devops-automation/backups/backup_TS_20260220_1212.tar.gz
+/home/devops/local-devops-automation/backups/backup_TS_20260210_1010.tar.gz
+/home/devops/local-devops-automation/backups/backup_TS_20260208_1115.tar.gz
+/home/devops/local-devops-automation/backups/backup_TS_20260205_0900.tar.gz
+2026-03-11 10:19:39 [ INFO ] Deleting old backups files..
+2026-03-11 10:19:39 [ INFO ] Deleting /home/devops/local-devops-automation/backups/backup_TS_20260220_1212.tar.gz
+2026-03-11 10:19:39 [ INFO ] Deleting /home/devops/local-devops-automation/backups/backup_TS_20260210_1010.tar.gz
+2026-03-11 10:19:39 [ INFO ] Deleting /home/devops/local-devops-automation/backups/backup_TS_20260208_1115.tar.gz
+2026-03-11 10:19:39 [ INFO ] Deleting /home/devops/local-devops-automation/backups/backup_TS_20260205_0900.tar.gz
+2026-03-11 10:19:39 [ INFO ] Old backups are deleted successfully..
